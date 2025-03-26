@@ -1,38 +1,39 @@
 # 🌿 **SmartCity+ – Sustainable Smart City Solution**
-### ♻️ *Waste Segregation | 🚦 Traffic Optimization | 🌫 AQI Monitoring*
 
+♻️ *Waste segregation with Green Points*  
+🚦 *Traffic insights & eco-friendly suggestions*  
+🌫 *Real-time AQI monitoring & rewards*  
+📊 *Admin dashboard for city insights*  
 ---
 
 ### ✅ **Tech Stack**
-- **Frontend:** Streamlit  
-- **Backend:** SQLite  
-- **APIs:** Google Maps, OpenWeather, Reward System  
+- **Frontend:** Streamlit (UI & Navigation)  
+- **Database:** SQLite (User authentication & data storage)  
+- **Backend:** Python (Modular architecture)  
+- **Multithreading:** For parallel execution of waste segregation tasks  
 
 ---
 
 ### 🚀 **Features**
 1. **User Authentication:**  
-   - Secure login/signup with admin privileges.  
-   - Admin dashboard with city-wide insights.  
+   - Login and Sign-up with admin and user roles.  
+   - Admins access the **Admin Dashboard** with city-wide insights.  
 
 2. **Waste Segregation Module:**  
-   - YOLO-based waste classification.  
-   - *Green Points* rewards for proper segregation.  
-   - Redeemable for *public transport discounts* or local vouchers.  
+   - Asynchronous execution for improved performance.  
+   - Displays waste management insights and rewards.  
 
-3. **Traffic Optimization Module:**  
-   - Real-time *traffic heatmaps* and congestion levels.  
-   - *Public transport breakdown suggestions* based on time, cost, and emissions.  
-   - *CO2 savings* displayed with eco-friendly recommendations.  
+3. **Public Transport Module:**  
+   - Displays public transport options and breakdown suggestions.  
+   - Provides **eco-friendly recommendations** with Green Points rewards.  
 
-4. **AQI Monitoring Module:**  
-   - Real-time AQI data with *location-based alerts*.  
-   - Health recommendations based on air quality levels.  
-   - *Green Points* rewards for using public transport on high AQI days.  
+4. **Admin Dashboard:**  
+   - Admin-only section for managing city data and monitoring user activity.  
 
 ---
 
-### ⚙️ **How to Run**
+### ⚙️ **How to Run Locally**
+
 1. **Clone the Repository**
 ```bash
 git clone https://github.com/your-username/SmartCityPlus.git  
@@ -41,32 +42,21 @@ cd SmartCityPlus
 
 2. **Install Dependencies**
 ```bash
-# Backend
-pip install -r backend/requirements.txt  
-
-# Frontend
-npm install
+pip install streamlit streamlit_option_menu sqlite3
 ```
 
-3. **Run Backend**
-```bash
-cd backend  
-python app.py
-```
-
-4. **Run Frontend**
-```bash
-npm run dev
-```
-
-5. **Streamlit Modules**
+3. **Run the App**
 ```bash
 streamlit run main.py
 ```
 
 ---
 
-### 🔥 **API Integrations**
-- **Google Maps API:** Real-time public transport and traffic data.  
-- **OpenWeather API:** AQI monitoring and weather-based alerts.  
-- **Reward API:** Green Points redemption system.  
+### 🔥 **Code Architecture**
+- `main.py`: The main Streamlit app with navigation and module execution.  
+- `Login.py`: Handles user login.  
+- `SignUp.py`: Manages user registration.  
+- `AdminDashboard.py`: Admin panel for monitoring.  
+- `PublicTransport.py`: Displays transport options and suggestions.  
+- `WasteSegregation.py`: Manages waste segregation with asynchronous execution.  
+- `users.db`: SQLite database for user authentication and data storage.  
