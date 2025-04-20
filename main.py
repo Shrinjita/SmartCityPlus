@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_option_menu import option_menu  # Stylish sidebar navigation
 import sqlite3
 import threading
 import time
