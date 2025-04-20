@@ -6,9 +6,10 @@ import sqlite3
 # --------------------------
 # 🌟 DATABASE CONNECTION
 # --------------------------
+@st.cache_resource
 def connect_db():
-    """Connect to SQLite database."""
-    conn = sqlite3.connect("users.db")
+    """Connect to SQLite database with connection caching."""
+    conn = sqlite3.connect("users.db", check_same_thread=False)
     return conn
 
 # --------------------------
@@ -16,13 +17,21 @@ def connect_db():
 # --------------------------
 def is_admin(username):
     """Check if the current user is admin."""
+    if not username:
+        return False
+        
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-    user = cursor.fetchone()
-    conn.close()
-
-    return user and user[1] == "Shrinjita" and user[2] == "shrinjitapaul@gmail.com"
+    
+    try:
+        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+        user = cursor.fetchone()
+        # Fix index access based on your database schema
+        return user and user[1] == username and user[2] == "shrinjitapaul@gmail.com"
+    except sqlite3.Error:
+        return False
+    finally:
+        cursor.close()  # Only close cursor, not connection
 
 
 # --------------------------
@@ -71,10 +80,4 @@ def admin_dashboard():
 
     else:
         # Restricted Access Message
-        st.warning("Admin access only!")
-
-# --------------------------
-# 🌟 STREAMLIT UI
-# --------------------------
-if __name__ == "__main__":
-    admin_dashboard()
+        st.warning("Admin access only! Please log in with administrator credentials.")

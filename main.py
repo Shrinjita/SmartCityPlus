@@ -8,6 +8,17 @@ from AdminDashboard import admin_dashboard
 from PublicTransport import public_transport
 from WasteSegregation import waste_segregation
 
+# Add missing import
+from streamlit_option_menu import option_menu
+
+# Set page configuration
+st.set_page_config(
+    page_title="EcoChennai Platform",
+    page_icon="🌍",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # ---------------------------
 # ✅ Efficient SQLite Connection with Caching
 # ---------------------------
@@ -28,14 +39,16 @@ def is_admin(username):
     try:
         cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
         user = cursor.fetchone()
-        return user and user[1] == "Shrinjita" and user[2] == "shrinjitapaul@gmail.com"
+        # Changed index from 1 and 2 to 0 and 1 to match the query results
+        return user and user[0] == "Shrinjita" and user[1] == "shrinjitapaul@gmail.com"
     
-    except sqlite3.ProgrammingError as e:
+    except sqlite3.Error as e:
         st.error(f"Database error: {e}")
         return False
 
     finally:
         cursor.close()  # ✅ Close the cursor only, not the DB connection
+
 # ---------------------------
 # ✅ User Authentication Check
 # ---------------------------
@@ -47,12 +60,12 @@ def is_logged_in():
 # ---------------------------
 def sidebar_navigation():
     """Sidebar with role-based navigation."""
-    if is_logged_in():
-        username = st.session_state.get("username", "")
+    with st.sidebar:
+        if is_logged_in():
+            username = st.session_state.get("username", "")
 
-        # 🎯 Admin Role
-        if is_admin(username):
-            with st.sidebar:
+            # 🎯 Admin Role
+            if is_admin(username):
                 st.write(f"👋 Welcome, {username} (Admin)")
                 menu = option_menu(
                     menu_title="Navigation",
@@ -64,9 +77,8 @@ def sidebar_navigation():
                 )
                 return menu
 
-        # 👥 Normal User Role
-        else:
-            with st.sidebar:
+            # 👥 Normal User Role
+            else:
                 st.write(f"👋 Welcome, {username}")
                 menu = option_menu(
                     menu_title="Navigation",
@@ -78,9 +90,8 @@ def sidebar_navigation():
                 )
                 return menu
 
-    # 🔒 Before Login: Show only Login and Sign Up
-    else:
-        with st.sidebar:
+        # 🔒 Before Login: Show only Login and Sign Up
+        else:
             st.write("🔒 Please log in to access the platform")
             menu = option_menu(
                 menu_title="Navigation",
@@ -93,45 +104,36 @@ def sidebar_navigation():
             return menu
 
 # ---------------------------
-# 🚀 Asynchronous Waste Segregation
-# ---------------------------
-def async_waste_segregation():
-    """Run waste segregation in a separate thread for faster performance."""
-    thread = threading.Thread(target=waste_segregation)
-    thread.start()
-
-# ---------------------------
-# ✅ Main Function with Parallel Execution
+# ✅ Main Function with Improved Error Handling
 # ---------------------------
 def main():
+    # Apply custom CSS
+    try:
+        with open("styles.css") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass  # Ignore if file not found
 
     # Sidebar Navigation
     menu = sidebar_navigation()
 
     # 🚀 Display modules based on selected menu
     if menu == "Login":
-        st.write("🔑 **Login Page**")
         login()
 
     elif menu == "Sign Up":
-        st.write("📝 **Sign Up Page**")
         signup()
 
-    elif menu == "Public Transport":
-        st.write("🚍 **Public Transport Module**")
+    elif menu == "Public Transport" and is_logged_in():
         public_transport()
 
-    elif menu == "Waste Segregation":
-        st.write("♻️ **Waste Segregation Module**")
-        
-        # Run Waste Segregation in a separate thread
+    elif menu == "Waste Segregation" and is_logged_in():
         waste_segregation()
 
     elif menu == "Admin Dashboard" and is_logged_in() and is_admin(st.session_state.get("username", "")):
-        st.write("📊 **Admin Dashboard**")
         admin_dashboard()
 
-    elif menu == "Logout":
+    elif menu == "Logout" and is_logged_in():
         st.session_state.authenticated = False
         st.session_state.username = ""
         st.success("✅ Logged out successfully!")
@@ -139,6 +141,10 @@ def main():
         # 🔥 Rerun app after logout
         time.sleep(1)  
         st.rerun()
+    
+    # Handle unauthorized access attempts
+    elif menu in ["Public Transport", "Waste Segregation", "Admin Dashboard"] and not is_logged_in():
+        st.warning("Please log in to access this feature")
 
 
 # ✅ Run the app
